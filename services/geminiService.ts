@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { NetworkType } from "../types";
 import MarkdownIt from 'markdown-it';
@@ -7,28 +6,30 @@ const md = new MarkdownIt();
 
 const prompts = {
   plain: `
-    You are an expert in deep learning. Explain the concept of a "plain" deep neural network.
+    You are an expert in deep learning. Explain the concept of a "plain" deep neural network in a clear, educational manner.
 
-    1.  **Core Idea:** Describe how it stacks layers sequentially.
-    2.  **Information Flow:** Explain how the output of one layer becomes the input for the next.
-    3.  **The Problem with Depth:** Clearly explain the "vanishing gradient problem" that occurs as these networks get very deep. Why does this make them hard to train?
-    4.  **Analogy:** Use a simple analogy, like the "game of telephone," to illustrate how information can be distorted or lost through many layers.
+    1. **Core Idea:** Describe how it stacks layers sequentially and information flows through them.
+    2. **The Problem:** Explain the vanishing gradient problem and why it makes deep networks hard to train.
+    3. **Visual Degradation:** Explain how information quality degrades as it passes through many layers.
+    4. **Limitations:** Discuss the practical limits of plain network depth.
+    5. **Simple Analogy:** Use the "telephone game" or similar analogy to illustrate information loss.
 
-    Format your response in Markdown. Use headings, bold text, and bullet points to make it easy to read.
+    Keep it concise but informative. Format in Markdown with clear sections.
   `,
   resnet: `
-    You are an expert in deep learning. Explain the concept of a Deep Residual Network (ResNet).
+    You are an expert in deep learning. Explain ResNet (Residual Networks) and how they solve the vanishing gradient problem.
 
-    1.  **Core Innovation:** Describe the "residual block" and the "shortcut" or "skip connection" as the key innovation. Explain the formula H(x) = F(x) + x.
-    2.  **Solving the Problem:** How does this shortcut connection help solve the vanishing gradient problem found in plain networks? Explain how it allows gradients to flow more easily.
-    3.  **Benefit:** What is the main benefit? (Allowing for much deeper, more powerful, and trainable networks).
-    4.  **Analogy:** Use a simple analogy. For example, an expert artist starting with a rough sketch (the identity x) and then adding details (the residual F(x)), rather than drawing from scratch at every step.
+    1. **Core Innovation:** Explain residual blocks and skip connections with the formula H(x) = F(x) + x.
+    2. **Problem Solved:** How skip connections prevent vanishing gradients and preserve information.
+    3. **Training Benefits:** Why ResNets can be trained much deeper (100+ layers) than plain networks.
+    4. **Information Flow:** How the identity mapping preserves original features.
+    5. **Real Impact:** Mention their revolutionary impact on computer vision and deep learning.
+    6. **Analogy:** Use the "building on a foundation" or "editor improving a draft" analogy.
 
-    Format your response in Markdown. Use headings, bold text, and bullet points to make it easy to read.
+    Keep it educational and accessible. Format in Markdown with clear sections.
   `
 };
 
-// In a secure environment, you would use `process.env.API_KEY`.
 const apiKey = process.env.API_KEY;
 if (!apiKey) {
   console.warn("API_KEY environment variable not set. API calls will fail.");
@@ -38,22 +39,17 @@ const ai = new GoogleGenAI({ apiKey: apiKey || "YOUR_API_KEY_HERE" });
 
 export const getExplanation = async (networkType: NetworkType): Promise<string> => {
   if (!apiKey) {
-      return Promise.resolve(md.render(`**Error:** API Key is not configured.
+    return Promise.resolve(md.render(`**Error:** API Key is not configured.
 
 Please set the \`API_KEY\` environment variable to use this feature.
 
-This application uses the Google Gemini API to generate explanations. Without a valid API key, it cannot connect to the service.
-
-**For Developers:**
-1. Obtain an API key from Google AI Studio.
-2. Set it as an environment variable named \`API_KEY\` in your deployment environment.
-`));
+This application uses the Google Gemini API to generate explanations.`));
   }
     
   try {
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompts[networkType],
+      model: "gemini-2.5-flash",
+      contents: prompts[networkType],
     });
 
     const text = response.text;

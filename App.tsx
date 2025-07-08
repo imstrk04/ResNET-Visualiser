@@ -1,106 +1,103 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { VisualizationArea } from './components/VisualizationArea';
-import { getExplanation } from './services/geminiService';
-import { Modal } from './components/ui/Modal';
+import { ExplanationModal } from './components/ExplanationModal';
 import { NetworkType } from './types';
-import { GithubIcon } from './components/Icon';
 
 const App: React.FC = () => {
-  const [depth, setDepth] = useState<number>(3);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
-  const [activeBlock, setActiveBlock] = useState<number>(-1);
-  const [explanation, setExplanation] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isLoadingExplanation, setIsLoadingExplanation] = useState<boolean>(false);
-  const [explanationTitle, setExplanationTitle] = useState<string>('');
+  const [depth, setDepth] = useState(4);
+  const [activeBlock, setActiveBlock] = useState(0);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [showGradients, setShowGradients] = useState(false);
+  const [showExplanation, setShowExplanation] = useState<{
+    title: string;
+    content: string;
+  } | null>(null);
 
-  const handleRunSimulation = useCallback(() => {
+  const runSimulation = async () => {
     setIsSimulating(true);
-    setActiveBlock(-1);
-  }, []);
+    setActiveBlock(0);
+    
+    // Simulate processing through each block
+    for (let i = 0; i <= depth + 1; i++) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setActiveBlock(i);
+    }
+    
+    setIsSimulating(false);
+  };
 
-  useEffect(() => {
-    if (isSimulating) {
-      const timers: number[] = [];
-      for (let i = 0; i <= depth; i++) {
-        const timer = setTimeout(() => {
-          setActiveBlock(i);
-          if (i === depth) {
-            setIsSimulating(false);
-          }
-        }, i * 600);
-        timers.push(timer);
+  const getExplanation = (networkType: NetworkType) => {
+    const explanations = {
+      plain: {
+        title: 'Plain Neural Network',
+        content: `Plain networks stack layers sequentially, where each layer's output becomes the next layer's input. While simple, they suffer from the vanishing gradient problem - as networks get deeper, gradients become exponentially smaller, making training difficult.
+
+Key Issues:
+- Information degrades through layers
+- Gradients vanish in backpropagation  
+- Limited depth capability
+- Poor feature preservation`
+      },
+      resnet: {
+        title: 'Residual Network (ResNet)',
+        content: `ResNet introduces skip connections that allow information to flow directly from earlier layers to later ones. The key insight: instead of learning H(x), learn the residual F(x) = H(x) - x.
+
+Key Benefits:
+- Preserves gradient flow
+- Enables very deep networks (100+ layers)
+- Better feature preservation
+- Solves vanishing gradient problem
+
+Formula: H(x) = F(x) + x`
       }
-      return () => timers.forEach(clearTimeout);
-    }
-  }, [isSimulating, depth]);
-  
-  const handleGetExplanation = useCallback(async (networkType: NetworkType) => {
-    setIsLoadingExplanation(true);
-    setIsModalOpen(true);
-    setExplanationTitle(`Explaining ${networkType === 'resnet' ? 'Residual' : 'Plain'} Networks`);
-    try {
-      const result = await getExplanation(networkType);
-      setExplanation(result);
-    } catch (error) {
-      console.error('Failed to get explanation:', error);
-      setExplanation('Sorry, I couldn\'t fetch the explanation. Please check the console for more details.');
-    } finally {
-      setIsLoadingExplanation(false);
-    }
-  }, []);
+    };
+    
+    setShowExplanation(explanations[networkType]);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-slate-950 text-white p-4">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">
-            ResNet Visualization
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            ResNet vs Plain Network Visualizer
           </h1>
-          <p className="mt-2 text-lg text-slate-400">
-            Comparing Plain vs. Residual Networks for Deep Learning.
+          <p className="text-slate-400 text-lg">
+            Understand how residual connections solve the vanishing gradient problem
           </p>
-           <a href="" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-slate-400 hover:text-sky-400 transition-colors">
-            <GithubIcon className="w-5 h-5" />
-            <span>View on GitHub</span>
-          </a>
-        </header>
+        </div>
 
-        <main className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-3">
+        <div className="grid lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-1">
             <ControlPanel
               depth={depth}
               setDepth={setDepth}
-              onRunSimulation={handleRunSimulation}
+              onRunSimulation={runSimulation}
               isSimulating={isSimulating}
+              showGradients={showGradients}
+              setShowGradients={setShowGradients}
             />
           </div>
-          <div className="lg:col-span-9">
+
+          <div className="lg:col-span-3">
             <VisualizationArea
               depth={depth}
               activeBlock={activeBlock}
               isSimulating={isSimulating}
-              onGetExplanation={handleGetExplanation}
+              onGetExplanation={getExplanation}
+              showGradients={showGradients}
             />
           </div>
-        </main>
-      </div>
+        </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={explanationTitle}
-      >
-        {isLoadingExplanation ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sky-400"></div>
-          </div>
-        ) : (
-          <div className="text-slate-300 whitespace-pre-wrap leading-relaxed" dangerouslySetInnerHTML={{ __html: explanation }}/>
-        )}
-      </Modal>
+        <ExplanationModal
+          isOpen={!!showExplanation}
+          onClose={() => setShowExplanation(null)}
+          title={showExplanation?.title || ''}
+          content={showExplanation?.content || ''}
+        />
+      </div>
     </div>
   );
 };

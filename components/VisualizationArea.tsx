@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NetworkVisualizer } from './NetworkVisualizer';
 import { NetworkType } from '../types';
@@ -8,9 +7,16 @@ interface VisualizationAreaProps {
   activeBlock: number;
   isSimulating: boolean;
   onGetExplanation: (networkType: NetworkType) => void;
+  showGradients?: boolean;
 }
 
-export const VisualizationArea: React.FC<VisualizationAreaProps> = ({ depth, activeBlock, isSimulating, onGetExplanation }) => {
+export const VisualizationArea: React.FC<VisualizationAreaProps> = ({ 
+  depth, 
+  activeBlock, 
+  isSimulating, 
+  onGetExplanation,
+  showGradients = false 
+}) => {
   return (
     <div className="space-y-8">
       <NetworkVisualizer
@@ -19,6 +25,7 @@ export const VisualizationArea: React.FC<VisualizationAreaProps> = ({ depth, act
         activeBlock={activeBlock}
         isSimulating={isSimulating}
         onGetExplanation={onGetExplanation}
+        showGradients={showGradients}
       />
       <NetworkVisualizer
         type="resnet"
@@ -26,6 +33,7 @@ export const VisualizationArea: React.FC<VisualizationAreaProps> = ({ depth, act
         activeBlock={activeBlock}
         isSimulating={isSimulating}
         onGetExplanation={onGetExplanation}
+        showGradients={showGradients}
       />
     </div>
   );
