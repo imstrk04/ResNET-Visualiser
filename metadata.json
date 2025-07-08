@@ -1,0 +1,5 @@
+
+{
+  "name": "ResNet Visualizer",
+  "description": "An interactive visualization tool to compare the behavior of Plain deep neural networks against Residual Networks (ResNets), demonstrating how skip connections help mitigate the vanishing gradient problem."
+}
