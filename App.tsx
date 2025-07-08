@@ -3,6 +3,7 @@ import { ControlPanel } from './components/ControlPanel';
 import { VisualizationArea } from './components/VisualizationArea';
 import { ExplanationModal } from './components/ExplanationModal';
 import { NetworkType } from './types';
+import { GithubIcon } from 'lucide-react'; 
 
 const App: React.FC = () => {
   const [depth, setDepth] = useState(4);
@@ -66,6 +67,10 @@ Formula: H(x) = F(x) + x`
           <p className="text-slate-400 text-lg">
             Understand how residual connections solve the vanishing gradient problem
           </p>
+          <a href="https://github.com/imstrk04/ResNET-Visualiser.git" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 mt-4 text-slate-400 hover:text-sky-400 transition-colors">
+            <GithubIcon className="w-5 h-5" />
+            <span>View on GitHub</span>
+          </a>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-6">
