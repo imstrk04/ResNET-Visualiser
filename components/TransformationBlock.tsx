@@ -7,6 +7,7 @@ interface TransformationBlockProps {
   depth: number;
   isActive: boolean;
   showGradient?: boolean;
+  inputImage?: string;
 }
 
 export const getFilterStyle = (type: NetworkType, index: number, totalDepth: number): string => {
@@ -29,7 +30,8 @@ export const TransformationBlock: React.FC<TransformationBlockProps> = ({
   index, 
   depth, 
   isActive, 
-  showGradient = false 
+  showGradient = false,
+  inputImage
 }) => {
   const [animationPhase, setAnimationPhase] = useState(0);
   
@@ -43,6 +45,9 @@ export const TransformationBlock: React.FC<TransformationBlockProps> = ({
   }, [isActive, animationPhase]);
 
   const filterStyle = getFilterStyle(type, index, depth);
+  
+  // Use uploaded image or default
+  const currentImage = inputImage || "https://picsum.photos/seed/resnet/200";
   
   return (
     <div className="flex flex-col items-center flex-shrink-0 relative">
@@ -61,7 +66,7 @@ export const TransformationBlock: React.FC<TransformationBlockProps> = ({
         }`}
       >
         <img 
-          src="https://picsum.photos/seed/resnet/200" 
+          src={currentImage}
           alt={`Transformation ${index+1}`}
           className="w-full h-full rounded-md object-cover transition-all duration-500"
           style={{

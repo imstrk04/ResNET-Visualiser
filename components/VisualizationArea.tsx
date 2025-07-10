@@ -8,6 +8,7 @@ interface VisualizationAreaProps {
   isSimulating: boolean;
   onGetExplanation: (networkType: NetworkType) => void;
   showGradients?: boolean;
+  inputImage?: string; // Add this prop
 }
 
 export const VisualizationArea: React.FC<VisualizationAreaProps> = ({ 
@@ -15,7 +16,8 @@ export const VisualizationArea: React.FC<VisualizationAreaProps> = ({
   activeBlock, 
   isSimulating, 
   onGetExplanation,
-  showGradients = false 
+  showGradients = false,
+  inputImage // Receive the inputImage prop
 }) => {
   return (
     <div className="space-y-8">
@@ -26,6 +28,7 @@ export const VisualizationArea: React.FC<VisualizationAreaProps> = ({
         isSimulating={isSimulating}
         onGetExplanation={onGetExplanation}
         showGradients={showGradients}
+        inputImage={inputImage} // Pass inputImage to NetworkVisualizer
       />
       <NetworkVisualizer
         type="resnet"
@@ -34,6 +37,7 @@ export const VisualizationArea: React.FC<VisualizationAreaProps> = ({
         isSimulating={isSimulating}
         onGetExplanation={onGetExplanation}
         showGradients={showGradients}
+        inputImage={inputImage} // Pass inputImage to NetworkVisualizer
       />
     </div>
   );

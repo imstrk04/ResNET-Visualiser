@@ -12,6 +12,7 @@ interface NetworkVisualizerProps {
   isSimulating: boolean;
   onGetExplanation: (networkType: NetworkType) => void;
   showGradients?: boolean;
+  inputImage?: string;
 }
 
 const titles = {
@@ -30,10 +31,14 @@ export const NetworkVisualizer: React.FC<NetworkVisualizerProps> = ({
   activeBlock, 
   isSimulating, 
   onGetExplanation,
-  showGradients = false 
+  showGradients = false,
+  inputImage
 }) => {
   const blocks = Array.from({ length: depth });
   const finalFilter = getFilterStyle(type, depth, depth);
+  
+  // Use uploaded image or default
+  const currentImage = inputImage || "https://picsum.photos/seed/resnet/200";
 
   return (
     <Card>
@@ -67,7 +72,7 @@ export const NetworkVisualizer: React.FC<NetworkVisualizerProps> = ({
               <span className="text-xs font-semibold text-slate-400 mb-2">Input</span>
               <div className="relative">
                 <img 
-                  src="https://picsum.photos/seed/resnet/200" 
+                  src={currentImage}
                   alt="Input" 
                   className="w-20 h-20 rounded-lg object-cover border-2 border-sky-500"
                 />
@@ -87,6 +92,7 @@ export const NetworkVisualizer: React.FC<NetworkVisualizerProps> = ({
                   depth={depth}
                   isActive={activeBlock >= i + 1}
                   showGradient={showGradients}
+                  inputImage={currentImage}
                 />
                 
                 {/* ResNet skip connection visualization */}
@@ -138,7 +144,7 @@ export const NetworkVisualizer: React.FC<NetworkVisualizerProps> = ({
                 <span className="text-xs font-semibold text-slate-400 mb-2">Output</span>
                 <div className="relative">
                   <img 
-                    src="https://picsum.photos/seed/resnet/200" 
+                    src={currentImage}
                     alt="Output" 
                     className="w-20 h-20 rounded-lg object-cover border-2 border-rose-500 transition-all duration-500"
                     style={{
